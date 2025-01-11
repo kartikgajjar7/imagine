@@ -13,7 +13,7 @@ const model = genAI.getGenerativeModel({
 });
 //instance of express server
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 app.use(cors());
 app.use(express.json());
 //creation of /templete endpoint
