@@ -1,25 +1,33 @@
+import { useState } from "react";
 import { PlaceholdersAndVanishInput } from "../components/ui/placeholders-and-vanish-input";
-
+import { useNavigate } from "react-router";
+import { Textarea, Button, IconButton } from "@material-tailwind/react";
+import { LinkIcon } from "@heroicons/react/24/outline";
 export default function PlaceholdersAndVanishInputDemo() {
+  let navigate = useNavigate();
+  const [prompt, setPrompt] = useState("");
   const placeholders = [
-    "What's the first rule of Fight Club?",
-    "Who is Tyler Durden?",
-    "Where is Andrew Laeddis Hiding?",
-    "Write a Javascript method to reverse a string",
-    "How to assemble your own PC?",
+    "Create a todo app with AI",
+    "Build a word guessing game using AI",
+    "Design a classic Snake game with AI",
+    "Generate a personal blog website with AI",
+    "Create a weather app with real-time data using AI",
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
+    setPrompt(e.target.value);
   };
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
+
+    setTimeout(() => {
+      navigate("/chat", { state: { prompt: prompt.trim() } });
+    }, 1000);
   };
   return (
-    <div className="h-full  bg-black w-full flex flex-col justify-center  items-center px-4">
+    <div className="h-full   w-screen flex flex-col justify-center  items-center px-4">
       <h2 className="mb-10 sm:mb-20 text-xl text-center sm:text-5xl text-white ">
-        Ask Aceternity UI Anything
+        Explore the Future of Web Design with AI – Developed by VOID
       </h2>
       <PlaceholdersAndVanishInput
         placeholders={placeholders}

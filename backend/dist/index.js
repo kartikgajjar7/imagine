@@ -15,21 +15,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const react_1 = require("./default/react");
 const prompts_1 = require("./prompts");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 //instace of llm model
 const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.0-flash-exp",
     systemInstruction: (0, prompts_1.getSystemPrompt)(),
 });
 //instance of express server
 const app = (0, express_1.default)();
 const PORT = 3000;
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 //creation of /templete endpoint
-app.get("/kartik/ask", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/kartik/ask", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const aiprompt = req.body.prompt;
+    console.log(aiprompt);
     const result = yield model.generateContent({
         contents: [
             {
@@ -39,7 +42,7 @@ app.get("/kartik/ask", (req, res) => __awaiter(void 0, void 0, void 0, function*
                         text: prompts_1.BASE_PROMPT,
                     },
                     {
-                        text: react_1.basePromptreact,
+                        text: `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${react_1.basePromptreact}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`,
                     },
                     {
                         text: aiprompt,
@@ -53,7 +56,9 @@ app.get("/kartik/ask", (req, res) => __awaiter(void 0, void 0, void 0, function*
         },
     });
     console.log(result.response.text());
-    res.status(200).json(result.response.text());
+    res
+        .status(200)
+        .json({ steps: result.response.text(), basicfiles: react_1.basePromptreact });
 }));
 // Start the server
 app.listen(PORT, () => {
