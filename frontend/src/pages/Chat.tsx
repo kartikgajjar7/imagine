@@ -120,39 +120,41 @@ export default function Chat() {
   const [textValue, setTextValue] = useState("");
   const webcontainer = createwebcontainer();
   useEffect(() => {
-    axios.post("http://localhost:3000/kartik/ask", { prompt }).then((res) => {
-      const stepresult = parsexml(res.data.steps);
-      setllmm(res.data);
-      const basicfilesresult = parsexml(res.data.basicfiles);
-      const steplistprompt = stepresult.map((step) => {
-        return {
-          id: step.id,
-          title: step.title,
-          description: step.description,
-          code: step.code,
-          status: step.status,
-          path: step.path,
-          type: step.type,
-        };
+    axios
+      .post("https://imagine-backend-dbwu.onrender.com/kartik/ask", { prompt })
+      .then((res) => {
+        const stepresult = parsexml(res.data.steps);
+        setllmm(res.data);
+        const basicfilesresult = parsexml(res.data.basicfiles);
+        const steplistprompt = stepresult.map((step) => {
+          return {
+            id: step.id,
+            title: step.title,
+            description: step.description,
+            code: step.code,
+            status: step.status,
+            path: step.path,
+            type: step.type,
+          };
+        });
+        const basicfilesprompt = basicfilesresult.map((step) => {
+          return {
+            id: step.id,
+            title: step.title,
+            description: step.description,
+            code: step.code,
+            status: step.status,
+            path: step.path,
+            type: step.type,
+          };
+        });
+        setisloading(false);
+        setSteps(steplistprompt);
+        const addin = createFileTree(steplistprompt);
+        const addin1 = createFileTree(basicfilesprompt);
+        const Filesformat = mergeArrays(addin1, addin);
+        setfiles(Filesformat);
       });
-      const basicfilesprompt = basicfilesresult.map((step) => {
-        return {
-          id: step.id,
-          title: step.title,
-          description: step.description,
-          code: step.code,
-          status: step.status,
-          path: step.path,
-          type: step.type,
-        };
-      });
-      setisloading(false);
-      setSteps(steplistprompt);
-      const addin = createFileTree(steplistprompt);
-      const addin1 = createFileTree(basicfilesprompt);
-      const Filesformat = mergeArrays(addin1, addin);
-      setfiles(Filesformat);
-    });
   }, []);
   useEffect(() => {
     const webcontainerStructure = convertToWebContainerFormat(filess);

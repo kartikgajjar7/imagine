@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { PlaceholdersAndVanishInput } from "../components/ui/placeholders-and-vanish-input";
 import { useNavigate } from "react-router";
-import { Textarea, Button, IconButton } from "@material-tailwind/react";
-import { LinkIcon } from "@heroicons/react/24/outline";
+
 export default function PlaceholdersAndVanishInputDemo() {
   let navigate = useNavigate();
   const [prompt, setPrompt] = useState("");
