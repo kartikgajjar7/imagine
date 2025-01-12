@@ -20,7 +20,6 @@ export const Preview: React.FC<PreviewProps> = ({ content, webcontainer }) => {
 
     // Wait for `server-ready` event
     webcontainer.on("server-ready", (port, url) => {
-     
       setUrl(url);
     });
     // Wait for the process to complete
@@ -30,7 +29,7 @@ export const Preview: React.FC<PreviewProps> = ({ content, webcontainer }) => {
   }, []);
   return (
     <div className="h-full bg-white">
-      <iframe width={"100%"} height={"100%"} src={url} />
+      <iframe crossorigin width={"100%"} height={"100%"} src={url} />
     </div>
   );
 };
