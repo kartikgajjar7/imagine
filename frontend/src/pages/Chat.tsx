@@ -120,6 +120,16 @@ export default function Chat() {
   const [textValue, setTextValue] = useState("");
   const webcontainer = createwebcontainer();
   useEffect(() => {
+    const myWorker = new Worker("worker.js");
+
+    if (window.crossOriginIsolated) {
+      const buffer = new SharedArrayBuffer(16);
+      myWorker.postMessage(buffer);
+    } else {
+      const buffer = new ArrayBuffer(16);
+      myWorker.postMessage(buffer);
+    }
+
     axios
       .post("https://imagine-backend-dbwu.onrender.com/kartik/ask", { prompt })
       .then((res) => {
