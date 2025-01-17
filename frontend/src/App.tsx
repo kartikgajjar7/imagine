@@ -1,8 +1,12 @@
 import PlaceholdersAndVanishInputDemo from "./comps/box";
 import "./App.css";
+import { useEffect } from "react";
 import { AuroraBackground } from "./components/ui/aurora-background";
 import { motion } from "framer-motion";
 function App(): JSX.Element {
+  useEffect(() => {
+    document.title = "iimaginee - By kartik";
+  }, []);
   return (
     <AuroraBackground>
       <motion.div

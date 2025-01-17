@@ -11,11 +11,13 @@ interface FileTreeProps {
   files: FileNode[];
   onFileSelect: (file: FileNode) => void;
   level?: number;
+  setActiveTab;
   isDark?: boolean;
 }
 
 export const FileTree: React.FC<FileTreeProps> = ({
   files,
+  setActiveTab,
   onFileSelect,
   level = 0,
   isDark = true,
@@ -46,10 +48,14 @@ export const FileTree: React.FC<FileTreeProps> = ({
                 : "text-gray-100 font-medium"
             }`}
             onClick={() => {
+              console.log("clicked");
               if (file.type === "directory") {
+                console.log("folder");
                 toggleFolder(file.name);
+                setActiveTab("editor");
               } else {
                 onFileSelect(file);
+                console.log("file");
               }
             }}
           >

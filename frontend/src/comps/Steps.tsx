@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useState } from "react";
 import { Step } from "@/types";
+
 export function StepsList({
   steps,
   isloading,
@@ -10,52 +11,76 @@ export function StepsList({
   isloading: Boolean;
 }) {
   const [isExpanded, setIsExpanded] = useState(true);
+
   if (isloading) {
     return (
-      <div className={cn("bg-[#1C1C1E] w-[500px]  shadow-xl p-4")}>
+      <div className="w-80 p-4 bg-gradient-to-b from-slate-900 to-slate-800 border-r border-white/5">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Build Steps</h2>
-          <ChevronDown className="w-5 h-5 text-white/70" />
+          <div className="h-6 w-24 rounded bg-slate-700/50 animate-pulse" />
+          <div className="h-5 w-5 rounded bg-slate-700/50 animate-pulse" />
         </div>
-        <div className="mt-3 space-y-2">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex items-center p-2  bg-[#2C2C2E]/50">
-              <div className="h-4 w-3/4 rounded animate-pulse bg-gradient-to-r from-[#2C2C2E] to-[#3C3C3E]" />
-            </div>
+        <div className="mt-4 space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-10 rounded-md bg-slate-700/30 animate-pulse"
+            />
           ))}
         </div>
       </div>
     );
   }
-  return (
-    <div className="bg-[#1C1C1E] w-[500px]   shadow-xl p-4 overflow-hidden">
-      <div
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between cursor-pointer"
-      >
-        <h2 className="text-xl font-semibold text-white">Build Steps</h2>
-        <ChevronDown
-          className={cn(
-            "w-5 h-5 text-white/70 transition-transform duration-200",
-            isExpanded && "rotate-180"
-          )}
-        />
-      </div>
 
-      <div
-        className={cn(
-          "grid transition-all duration-200 ease-in-out",
-          isExpanded ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"
-        )}
-      >
-        <div className="overflow-hidden">
-          <div className="space-y-1">
-            {steps.map((step) => (
+  return (
+    <div className="w-80 h-full bg-gradient-to-b from-slate-900 to-slate-800 border-r border-white/5">
+      <div className="p-4">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between group"
+        >
+          <h2 className="text-sm font-medium text-slate-200 tracking-wide uppercase">
+            Build Steps
+          </h2>
+          <ChevronDown
+            className={cn(
+              "w-4 h-4 text-slate-400 transition-all duration-300 ease-spring",
+              isExpanded && "-rotate-180",
+              "group-hover:text-slate-200"
+            )}
+          />
+        </button>
+
+        <div
+          className={cn(
+            "transition-all duration-300 ease-spring",
+            isExpanded
+              ? "mt-3 opacity-100"
+              : "h-0 mt-0 opacity-0 overflow-hidden"
+          )}
+        >
+          <div className="space-y-1.5">
+            {steps.map((step, index) => (
               <div
                 key={step.id}
-                className="p-2 rounded-lg text-white/90 hover:text-white hover:bg-[#2C2C2E] transition-colors"
+                className={cn(
+                  "relative group px-3 py-2 rounded-md",
+                  "transition-all duration-200",
+                  "hover:bg-white/5 active:bg-white/10",
+                  "cursor-pointer"
+                )}
               >
-                {step.title}
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center">
+                    <span className="text-xs font-medium text-slate-300">
+                      {index + 1}
+                    </span>
+                  </div>
+
+                  <span className="text-sm text-slate-300 group-hover:text-slate-100">
+                    {step.title}
+                  </span>
+                </div>
+                <div className="absolute inset-0 rounded-md ring-1 ring-white/5 group-hover:ring-white/10" />
               </div>
             ))}
           </div>
@@ -64,3 +89,5 @@ export function StepsList({
     </div>
   );
 }
+
+export default StepsList;

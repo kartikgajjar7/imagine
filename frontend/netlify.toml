@@ -1,0 +1,17 @@
+[build]
+  publish = "dist"  # Specify the directory containing your built files
+  command = "npm run build"  # Adjust this if necessary for your build process
+
+# Redirects configuration
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers configuration
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Embedder-Policy = "require-corp"
+    Cross-Origin-Resource-Policy = "cross-origin"

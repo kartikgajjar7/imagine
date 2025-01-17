@@ -1,35 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { EditorPane } from "./EditorPane";
 import { Preview } from "./Preview";
 import { Tabs } from "./Tabs";
 import { FileNode } from "../types/index";
 
 interface MainContentProps {
-  files :FileNode[]
+  files: FileNode[];
   selectedFile: FileNode | null;
 }
 
 export const MainContent: React.FC<MainContentProps> = ({
   selectedFile,
   files,
+  setActiveTab,
+  activeTab,
   webcontainer,
 }) => {
-  const [activeTab, setActiveTab] = React.useState<"editor" | "preview">(
-    "editor"
-  );
+  const [load, setload] = useState(true);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-900">
       <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
-      {(() => {
-        console.log(webcontainer, "MainContent");
-        return null; // This ensures no UI is affected.
-      })()}
+
       <div className="flex-1">
         {activeTab === "editor" ? (
-          <EditorPane  files={files} file={selectedFile} webcontainer={webcontainer} />
+          <EditorPane
+            setActiveTab={setActiveTab}
+            files={files}
+            file={selectedFile}
+            webcontainer={webcontainer}
+          />
         ) : (
           <Preview
+            load={load}
             content={selectedFile?.content || ""}
             webcontainer={webcontainer}
           />

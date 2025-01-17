@@ -26,7 +26,7 @@ export default function PlaceholdersAndVanishInputDemo() {
   return (
     <div className="h-full   w-screen flex flex-col justify-center  items-center px-4">
       <h2 className="mb-10 sm:mb-20 text-xl text-center sm:text-5xl text-white ">
-        Explore the Future of Web Design with AI – Developed by VOID
+        Explore the Future of Web Design with AI – Developed by kartik
       </h2>
       <PlaceholdersAndVanishInput
         placeholders={placeholders}

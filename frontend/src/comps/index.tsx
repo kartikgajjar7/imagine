@@ -4,13 +4,14 @@ import { MainContent } from "./MainContent";
 import { Files, Settings } from "lucide-react";
 import { FileNode } from "../types/index";
 
-
-
 export const FileExplorer: React.FC = ({ files, webcontainer }) => {
   const [selectedFile, setSelectedFile] = React.useState<FileNode | null>(null);
-
+  const [activeTab, setActiveTab] = React.useState<"editor" | "preview">(
+    "editor"
+  );
   const handleFileSelect = (file: FileNode) => {
     if (file.type === "file") {
+      setActiveTab("editor");
       setSelectedFile(file);
     }
   };
@@ -25,14 +26,13 @@ export const FileExplorer: React.FC = ({ files, webcontainer }) => {
             <Files className="w-5 h-5 mr-2 text-blue-400" />
             <span className="font-medium text-gray-200">Explorer</span>
           </div>
-          <button className="p-1 rounded hover:bg-gray-700">
-            <Settings className="w-4 h-4 text-gray-400" />
-          </button>
+          <button className="p-1 rounded hover:bg-gray-700"></button>
         </div>
 
         {/* File Tree */}
         <div className="p-2 text-gray-300">
           <FileTree
+            setActiveTab={setActiveTab}
             files={files}
             onFileSelect={handleFileSelect}
             isDark={true}
@@ -40,8 +40,13 @@ export const FileExplorer: React.FC = ({ files, webcontainer }) => {
         </div>
       </div>
 
-      
-      <MainContent files={files} webcontainer={webcontainer} selectedFile={selectedFile} />
+      <MainContent
+        setActiveTab={setActiveTab}
+        activeTab={activeTab}
+        files={files}
+        webcontainer={webcontainer}
+        selectedFile={selectedFile}
+      />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { StepsList } from "../comps/Steps";
 import { useEffect, useState } from "react";
 import { FileExplorer } from "../comps/index";
 import { createwebcontainer } from "../lib/bootwebc";
+
 function mergeArrays(arr1, arr2) {
   const merged = [...arr1]; // Start with all elements from the first array
 
@@ -48,11 +49,11 @@ function createFileTree(data: { path: string; code: string }[]): FileNode[] {
 
     if (!path) return; // Skip items without a path
 
-    const parts = path.split("/"); // Split the path into segments
+    const parts = path.split("/");
     let currentLevel = result;
 
     parts.forEach((part, index) => {
-      const isFile = index === parts.length - 1; // Check if it's the last part (a file)
+      const isFile = index === parts.length - 1;
       let existing = currentLevel.find((entry) => entry.name === part);
 
       if (!existing) {
@@ -65,7 +66,7 @@ function createFileTree(data: { path: string; code: string }[]): FileNode[] {
       }
 
       if (!isFile) {
-        currentLevel = existing.children as FileNode[]; // Descend into the directory
+        currentLevel = existing.children as FileNode[];
       }
     });
   });
@@ -120,16 +121,6 @@ export default function Chat() {
   const [textValue, setTextValue] = useState("");
   const webcontainer = createwebcontainer();
   useEffect(() => {
-    const myWorker = new Worker("worker.js");
-
-    if (window.crossOriginIsolated) {
-      const buffer = new SharedArrayBuffer(16);
-      myWorker.postMessage(buffer);
-    } else {
-      const buffer = new ArrayBuffer(16);
-      myWorker.postMessage(buffer);
-    }
-
     axios
       .post("https://imagine-backend-dbwu.onrender.com/kartik/ask", { prompt })
       .then((res) => {
@@ -172,77 +163,17 @@ export default function Chat() {
     webcontainer?.mount(webcontainerStructure);
   }, [filess, webcontainer]);
 
-  if (!filess || !webcontainer) return <h1>Loading...</h1>;
+  if (!filess || !webcontainer)
+    return (
+      <div className="w-full h-full bg-black flex items-center justify-center">
+        <img src="/img.gif" alt="" />
+      </div>
+    );
 
   return (
     <div className="flex flex-row h-full">
       <div className="flex flex-col">
         <StepsList steps={steps} isloading={isloading} />
-        <div className="flex w-full flex-row items-center gap-2 rounded-2xl border border-gray-700/50 bg-gray-800/90 p-2">
-          <textarea
-            rows={1}
-            value={textValue}
-            onChange={(e) => setTextValue(e.target.value)}
-            placeholder="Your Message"
-            className="flex-1 min-h-[40px] bg-transparent text-gray-100 placeholder-gray-400 resize-none border-0 focus:ring-0 focus:outline-none p-2 rounded-xl"
-          />
-
-          <button
-            onClick={() => {
-              console.log(llmm.basicfiles);
-              console.log(textValue);
-              axios
-                .post("http://localhost:3000/kartik/ask", {
-                  prompt: `${llmm.basicfiles} ${textValue}`,
-                })
-                .then((res) => {
-                  setllmm(res.data);
-                  const stepresult = parsexml(res.data.steps);
-                  const basicfilesresult = parsexml(res.data.basicfiles);
-                  const steplistprompt = stepresult.map((step) => ({
-                    id: step.id,
-                    title: step.title,
-                    description: step.description,
-                    code: step.code,
-                    status: step.status,
-                    path: step.path,
-                    type: step.type,
-                  }));
-                  const basicfilesprompt = basicfilesresult.map((step) => ({
-                    id: step.id,
-                    title: step.title,
-                    description: step.description,
-                    code: step.code,
-                    status: step.status,
-                    path: step.path,
-                    type: step.type,
-                  }));
-                  setisloading(false);
-                  setSteps(steplistprompt);
-                  const addin = createFileTree(steplistprompt);
-                  const addin1 = createFileTree(basicfilesprompt);
-                  const Filesformat = mergeArrays(addin1, addin);
-                  setfiles(Filesformat);
-                });
-            }}
-            className="p-2 rounded-xl text-gray-300 hover:bg-gray-700 transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-              />
-            </svg>
-          </button>
-        </div>
       </div>
       <FileExplorer files={filess} webcontainer={webcontainer} />
     </div>
