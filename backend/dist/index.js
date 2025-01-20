@@ -18,6 +18,8 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const react_1 = require("./default/react");
 const prompts_1 = require("./prompts");
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 //instace of llm model
 const model = genAI.getGenerativeModel({
@@ -26,39 +28,61 @@ const model = genAI.getGenerativeModel({
 });
 //instance of express server
 const app = (0, express_1.default)();
-const PORT = 3000;
-app.use((0, cors_1.default)());
+// in latest body-parser use like below.
+app.use(express_1.default.urlencoded({ extended: false }));
+const PORT = process.env.PORT;
+app.use((0, cors_1.default)({
+    origin: "*",
+    credentials: true,
+}));
 app.use(express_1.default.json());
 //creation of /templete endpoint
-app.post("/kartik/ask", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const aiprompt = req.body.prompt;
-    console.log(aiprompt);
-    const result = yield model.generateContent({
-        contents: [
-            {
-                role: "user",
-                parts: [
-                    {
-                        text: prompts_1.BASE_PROMPT,
-                    },
-                    {
-                        text: `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${react_1.basePromptreact}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`,
-                    },
-                    {
-                        text: aiprompt,
-                    },
-                ],
+app.post("/kartik/ask", upload.single("image"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const aiprompt = req.body.prompt;
+        let base64Image = null;
+        let mimeType = null;
+        // Check if an image was uploaded
+        if (req.file) {
+            const imageBuffer = req.file.buffer;
+            mimeType = req.file.mimetype;
+            base64Image = imageBuffer.toString("base64");
+        }
+        // Construct the `parts` array conditionally
+        const parts = [];
+        if (base64Image && mimeType) {
+            parts.push({
+                inlineData: {
+                    data: base64Image,
+                    mimeType: mimeType,
+                },
+            });
+        }
+        parts.push({ text: prompts_1.BASE_PROMPT }, {
+            text: `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${react_1.basePromptreact}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`,
+        }, { text: aiprompt });
+        // Send the request to the model
+        const result = yield model.generateContent({
+            contents: [
+                {
+                    role: "user",
+                    parts: parts, // Use the dynamically constructed parts
+                },
+            ],
+            generationConfig: {
+                maxOutputTokens: 8000,
+                temperature: 0.1,
             },
-        ],
-        generationConfig: {
-            maxOutputTokens: 8000,
-            temperature: 0.1,
-        },
-    });
-    console.log(result.response.text());
-    res
-        .status(200)
-        .json({ steps: result.response.text(), basicfiles: react_1.basePromptreact });
+        });
+        console.log(result.response.text());
+        res
+            .status(200)
+            .json({ steps: result.response.text(), basicfiles: react_1.basePromptreact });
+    }
+    catch (error) {
+        console.error("Error in /kartik/ask:", error);
+        res.status(500).json({ error: error.message });
+    }
 }));
 // Start the server
 app.listen(PORT, () => {
