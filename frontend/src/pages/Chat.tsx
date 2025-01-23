@@ -111,18 +111,24 @@ function convertToWebContainerFormat(
 
   return result;
 }
-
+//https://imagine-backend-dbwu.onrender.com
 export default function Chat() {
   const { prompt } = useLocation().state;
+  const { image } = useLocation().state;
+  const formData = new FormData();
+  formData.append("prompt", prompt);
+  formData.append("image", image);
+  console.log(formData.entries(), "This is my form data");
   const [llmm, setllmm] = useState();
   const [isloading, setisloading] = useState(true);
   const [steps, setSteps] = useState<Step[]>([]);
   const [filess, setfiles] = useState([]);
-  const [textValue, setTextValue] = useState("");
+
   const webcontainer = createwebcontainer();
-  useEffect(() => {
+  //localhost:3001
+  http: useEffect(() => {
     axios
-      .post("https://imagine-backend-dbwu.onrender.com/kartik/ask", { prompt })
+      .post(" https://imagine-backend-dbwu.onrender.com/kartik/ask", formData)
       .then((res) => {
         const stepresult = parsexml(res.data.steps);
         setllmm(res.data);
@@ -174,6 +180,13 @@ export default function Chat() {
     <div className="flex flex-row h-full">
       <div className="flex flex-col">
         <StepsList steps={steps} isloading={isloading} />
+        {filess.length === 0 ? (
+          <div className="flex-grow flex justify-center items-center">
+            <img className="w-[100px] h-[100px]" src="./loading.gif" alt="" />
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       <FileExplorer files={filess} webcontainer={webcontainer} />
     </div>

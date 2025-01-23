@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { AuroraBackground } from "./components/ui/aurora-background";
 import { motion } from "framer-motion";
 function App(): JSX.Element {
+  null;
+
   useEffect(() => {
     document.title = "iimaginee - By kartik";
   }, []);
